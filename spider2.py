@@ -47,6 +47,11 @@ class Spider(object):
     def login(self):
         self.inputCaptcha()
         r = self.s.post(self.url, data=self.login_data)
+        if len(r.text) != 17906:
+            print("验证码错误")
+            return False
+        else:
+            return True
 
     def getScorePage(self):
         url_score = 'http://bkjw.whu.edu.cn/stu/stu_score_parent.jsp'
@@ -84,7 +89,10 @@ class Spider(object):
 
 
 spider = Spider()
-spider.login()
+
+while spider.login() is False:
+    pass
+
 while input("是否继续查询(y/n):") != 'n':
     year = input("年份:")
     term = input("学期:")
