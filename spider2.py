@@ -23,8 +23,8 @@ class Spider(object):
         self.login_data = {
             "timestamp": "1610800439978",
             "jwb": "%E6%AD%A6%E5%A4%A7%E6%9C%AC%E7%A7%91%E6%95%99%E5%8A%A1%E7%B3%BB%E7%BB%9F",
-            "id": "2019302180149",
-            "pwd": "1a0a11a1093806e8883ee1f07dbb2422",
+            "id": "你的学号",
+            "pwd": "你抓包后得到的加密后的密码",
             "xdvfb": ""  # 提交的表单的数据
         }
 
