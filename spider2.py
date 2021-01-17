@@ -7,7 +7,7 @@ import time
 
 class Spider(object):
     def __init__(self):
-        self.url = "http://bkjw.whu.edu.cn/servlet/b89d79056"  # 用于重定向的url
+        self.url = "http://bkjw.whu.edu.cn/servlet/_6daf195df2a"  # 用于重定向的url
         self.refer = 'http://bkjw.whu.edu.cn'  # 教务系统限定了refer是这个,并且也可以作为一些请求的前半部分
         self.s = requests.session()
         self.s.headers.update({"Connection": "keep-alive",
@@ -16,15 +16,14 @@ class Spider(object):
                                              "like Gecko) Chrome/87.0.4280.141 Safari/537.36",
                                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,"
                                          "image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-                               "Referer": "http://bkjw.whu.edu.cn/stu/stu_score_parent.jsp",
                                "Accept-Encoding": "gzip, deflate",
                                "Accept-Language": "zh-CN,zh;q=0.9",
-                               'referer': self.refer})  # 更新headers,防反爬
+                               'Referer': self.refer})  # 更新headers,防反爬
         self.login_data = {
-            "timestamp": "1610800439978",
+            "timestamp": "1610880036436",
             "jwb": "%E6%AD%A6%E5%A4%A7%E6%9C%AC%E7%A7%91%E6%95%99%E5%8A%A1%E7%B3%BB%E7%BB%9F",
-            "id": "你的学号",
-            "pwd": "你抓包后得到的加密后的密码",
+            "id": "2019302180xxx",  # 填你们自己的
+            "pwd": "1a0a11a1093806e8883ee1f07dbbxxxx",
             "xdvfb": ""  # 提交的表单的数据
         }
 
@@ -48,7 +47,7 @@ class Spider(object):
         self.inputCaptcha()
         r = self.s.post(self.url, data=self.login_data)
         if len(r.text) != 17906:
-            print("验证码错误")
+            print(r.text)
             return False
         else:
             return True
