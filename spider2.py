@@ -22,16 +22,16 @@ class Spider(object):
         self.login_data = {
             "timestamp": "1610880036436",
             "jwb": "%E6%AD%A6%E5%A4%A7%E6%9C%AC%E7%A7%91%E6%95%99%E5%8A%A1%E7%B3%BB%E7%BB%9F",
-            "id": "2019302180xxx",  # 填你们自己的
-            "pwd": "1a0a11a1093806e8883ee1f07dbbxxxx",
+            "id": "2019302180xxx",
+            "pwd": "1a0a11a1093806e8883ee1f07dbb2xxx",
             "xdvfb": ""  # 提交的表单的数据
         }
 
     def getCaptcha(self):
         r = self.s.get(self.url)  # 第一次请求获取验证码的地址
         demo = BeautifulSoup(r.text, 'html.parser')
-        a = demo.find_all('img')
-        captcha_img = a[2].attrs['src']
+        a = demo.find_all('img', attrs={'name': "sleep"})
+        captcha_img = a[0].attrs['src']
         captcha = self.refer + captcha_img  # checkcode是验证码的网址
         return captcha
 
@@ -47,7 +47,7 @@ class Spider(object):
         self.inputCaptcha()
         r = self.s.post(self.url, data=self.login_data)
         if len(r.text) != 17906:
-            print(r.text)
+            print("验证码错误")
             return False
         else:
             return True
