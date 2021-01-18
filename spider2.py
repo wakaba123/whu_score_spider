@@ -3,13 +3,16 @@ from bs4 import BeautifulSoup
 from PIL import Image
 import re
 import time
+import hashlib
 
 
 class Spider(object):
-    def __init__(self):
+    def __init__(self, your_id, your_pwd):
         self.url = "http://bkjw.whu.edu.cn/servlet/_6daf195df2a"  # 用于重定向的url
         self.refer = 'http://bkjw.whu.edu.cn'  # 教务系统限定了refer是这个,并且也可以作为一些请求的前半部分
         self.s = requests.session()
+        self.id = your_id
+        self.pwd = your_pwd
         self.s.headers.update({"Connection": "keep-alive",
                                "Upgrade-Insecure-Requests": "1",
                                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, "
@@ -22,10 +25,13 @@ class Spider(object):
         self.login_data = {
             "timestamp": "1610880036436",
             "jwb": "%E6%AD%A6%E5%A4%A7%E6%9C%AC%E7%A7%91%E6%95%99%E5%8A%A1%E7%B3%BB%E7%BB%9F",
-            "id": "2019302180xxx",
-            "pwd": "1a0a11a1093806e8883ee1f07dbb2xxx",
+            "id": self.id,
+            "pwd": self.getHashPwd(),
             "xdvfb": ""  # 提交的表单的数据
         }
+
+    def getHashPwd(self):
+        return hashlib.md5(self.pwd.encode(encoding='UTF-8')).hexdigest()
 
     def getCaptcha(self):
         r = self.s.get(self.url)  # 第一次请求获取验证码的地址
@@ -87,7 +93,9 @@ class Spider(object):
                 print(lessonName, lessonScore)
 
 
-spider = Spider()
+id = '2019302180xxx'  # 这里输入你的学号
+pwd = 'xxxxxx'        # 这里输入你的密码
+spider = Spider(id, pwd)
 
 while spider.login() is False:
     pass
