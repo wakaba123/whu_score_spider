@@ -33,8 +33,8 @@ class Spider(object):
             "term": term,
             "year": year
         }
-        self.proxies = { "http": "http://127.0.0.1:8080", "https": "http://127.0.0.1:8080", }
-        #self.proxies = {}
+        #self.proxies = { "http": "http://127.0.0.1:8080", "https": "http://127.0.0.1:8080", }
+        self.proxies = {}
 
     def getHashPwd(self):
         return hashlib.md5(self.pwd.encode(encoding='UTF-8')).hexdigest()
@@ -65,7 +65,7 @@ class Spider(object):
             return False
         elif re.search(pattern2, str(r.text)):
             print("用户名/密码错误")
-            exit()
+            a = input("xd快去文件里改密码")
         else:
             return True
 
@@ -93,7 +93,7 @@ class Spider(object):
 
 
 id = '2019302180xxx'  # 这里输入你的学号
-pwd = 'xxxxx'  # 这里输入你的密码
+pwd = 'xxx'  # 这里输入你的密码
 year = '2020'  # 这里输入查询的年份
 term = '2'  # 这里输入查询的学期
 spider = Spider(id, pwd, year, term)
