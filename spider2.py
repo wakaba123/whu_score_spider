@@ -7,7 +7,7 @@ import hashlib
 
 
 class Spider(object):
-    def __init__(self, your_id, your_pwd):
+    def __init__(self, your_id, your_pwd, year, term):
         self.url = "http://bkjw.whu.edu.cn/servlet/_6daf195df2a"  # 用于重定向的url
         self.refer = 'http://bkjw.whu.edu.cn'  # 教务系统限定了refer是这个,并且也可以作为一些请求的前半部分
         self.s = requests.session()
@@ -29,6 +29,12 @@ class Spider(object):
             "pwd": self.getHashPwd(),
             "xdvfb": ""  # 提交的表单的数据
         }
+        self.queryinfo = {
+            "term": term,
+            "year": year
+        }
+        self.proxies = { "http": "http://127.0.0.1:8080", "https": "http://127.0.0.1:8080", }
+        #self.proxies = {}
 
     def getHashPwd(self):
         return hashlib.md5(self.pwd.encode(encoding='UTF-8')).hexdigest()
@@ -51,34 +57,25 @@ class Spider(object):
 
     def login(self):
         self.inputCaptcha()
-        r = self.s.post(self.url, data=self.login_data)
-        if len(r.text) != 17906:
+        r = self.s.post(self.url, data=self.login_data, proxies=self.proxies)  # zheli
+        pattern1 = "验证码错误"
+        pattern2 = "密码错误"
+        if re.search(pattern1, str(r.text)):
             print("验证码错误")
             return False
+        elif re.search(pattern2, str(r.text)):
+            print("用户名/密码错误")
+            exit()
         else:
             return True
 
-    def getScorePage(self):
-        url_score = 'http://bkjw.whu.edu.cn/stu/stu_score_parent.jsp'
-        r = self.s.get(url_score)  # 访问查找成绩的网页
+    def getScorePage2(self):
+        url = self.refer + '/servlet/Svlt_QueryStuScore'
+        r = self.s.post(url, data=self.queryinfo, proxies=self.proxies)
+        return r.text
 
-        pattern = re.compile(r'(?<=\").*?(?=\")')  # 找到真正要访问的网页
-        demo1 = str(r.text)
-        url_crfs = re.findall(pattern, demo1)
-        url_crfs = url_crfs[73]
-
-        a = str(time.asctime())  # 根据网页结构处理的时间
-        a = a.split(' ')
-        a[-1], a[-2] = a[-2], a[-1]
-        a.append('GMT+0800 (中国标准时间)')
-        a = ' '.join(a)
-
-        url_crfs = self.refer + url_crfs + a  # 获得真正可以使用的网址
-        r2 = self.s.get(url_crfs)  # 访问该网址,获得成绩信息
-        return r2.text
-
-    def processScore(self, year, term):
-        demo2 = BeautifulSoup(self.getScorePage(), "html.parser")  # 以下内容为用beautifulsoup提取成绩信息.
+    def processScore(self):
+        demo2 = BeautifulSoup(self.getScorePage2(), "html.parser")  # 以下内容为用beautifulsoup提取成绩信息.
         score_not_got = 0
         a = demo2.find_all('tr')
         if len(a) == 0:
@@ -87,25 +84,24 @@ class Spider(object):
             all_tds = i.find_all('td')
             termData = all_tds[-3].string
             yearData = all_tds[-4].string
-            if term in termData and year in yearData:
-                lessonName = all_tds[0].string.replace('\n', '') + '\n'
-                lessonScore = all_tds[-2].string
-                if lessonScore is None:
-                    score_not_got += 1
-                print(lessonName, lessonScore)
+            lessonName = all_tds[0].string.replace('\n', '') + '\n'
+            lessonScore = all_tds[-2].string
+            if lessonScore is None:
+                score_not_got += 1
+            print(lessonName, lessonScore)
         return score_not_got
 
 
 id = '2019302180xxx'  # 这里输入你的学号
-pwd = 'xxxxxx'        # 这里输入你的密码
-spider = Spider(id, pwd)
+pwd = 'xxxxx'  # 这里输入你的密码
+year = '2020'  # 这里输入查询的年份
+term = '2'  # 这里输入查询的学期
+spider = Spider(id, pwd, year, term)
 
 while spider.login() is False:
     pass
 
 while True:
-    year = '2020'
-    term = '1'
-    print("没出的成绩有%d门" % spider.processScore(year, term))
+    print("没出的成绩有%d门" % spider.processScore())
     print(time.asctime())
     time.sleep(300)
