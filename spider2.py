@@ -99,6 +99,7 @@ class Spider(object):
 id = '2019302180xxx'  # 这里输入你的学号
 pwd = 'xxxxxx'        # 这里输入你的密码
 spider = Spider(id, pwd)
+
 while spider.login() is False:
     pass
 
