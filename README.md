@@ -1,6 +1,9 @@
 # whu_score_spider
  spider for getting final score
 
+**已失效**
+教务系统增加了反爬虫, 本爬虫已失效
+
 本爬虫仅供交流学习使用
 
 如需使用成绩查询功能
