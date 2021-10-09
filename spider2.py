@@ -1,9 +1,12 @@
-import requests
-from bs4 import BeautifulSoup
-from PIL import Image
+import hashlib
 import re
 import time
-import hashlib
+
+import requests
+from PIL import Image
+from bs4 import BeautifulSoup
+
+from send_mail import SendEmail
 
 
 class Spider(object):
@@ -57,7 +60,8 @@ class Spider(object):
 
     def login(self):
         self.inputCaptcha()
-        r = self.s.post(self.url, data=self.login_data, proxies=self.proxies)  # zheli
+        r = self.s.post(self.url, data=self.login_data,
+                        proxies=self.proxies)  # zheli
         pattern1 = "验证码错误"
         pattern2 = "密码错误"
         if re.search(pattern1, str(r.text)):
@@ -70,20 +74,20 @@ class Spider(object):
             return True
 
     def getScorePage2(self):
-        url = self.refer + '/servlet/Svlt_QueryStuScore'
+        url = 'http://bkjw.whu.edu.cn/stu/stu_score_parent.jsp?index=0'
         r = self.s.post(url, data=self.queryinfo, proxies=self.proxies)
         return r.text
 
     def processScore(self):
-        demo2 = BeautifulSoup(self.getScorePage2(), "html.parser")  # 以下内容为用beautifulsoup提取成绩信息.
+        # 以下内容为用beautifulsoup提取成绩信息.
+        demo2 = BeautifulSoup(self.getScorePage2(), "html.parser")
+        print(demo2)
         score_not_got = 0
         a = demo2.find_all('tr')
         if len(a) == 0:
             print('未知错误')
         for i in a[1:]:
             all_tds = i.find_all('td')
-            termData = all_tds[-3].string
-            yearData = all_tds[-4].string
             lessonName = all_tds[0].string.replace('\n', '') + '\n'
             lessonScore = all_tds[-2].string
             if lessonScore is None:
@@ -92,16 +96,16 @@ class Spider(object):
         return score_not_got
 
 
-id = '2019302180xxx'  # 这里输入你的学号
-pwd = 'xxx'  # 这里输入你的密码
-year = '2020'  # 这里输入查询的年份
-term = '2'  # 这里输入查询的学期
-spider = Spider(id, pwd, year, term)
-
-while spider.login() is False:
-    pass
-
-while True:
-    print("没出的成绩有%d门" % spider.processScore())
-    print(time.asctime())
-    time.sleep(300)
+# id = '2019302180149'  # 这里输入你的学号
+# pwd = '142811'  # 这里输入你的密码
+# year = '2020'  # 这里输入查询的年份
+# term = '2'  # 这里输入查询的学期
+# spider = Spider(id, pwd, year, term)
+#
+# while spider.login() is False:
+#     pass
+#
+# while True:
+#     print("没出的成绩有%d门" % spider.processScore())
+#     print(time.asctime())
+#     time.sleep(300)
